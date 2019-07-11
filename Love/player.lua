@@ -1,5 +1,3 @@
-require "utils"
-
 Player = Object.extend(Object)
 
 function Player:new(x, y, width, height, speed, sprite)
