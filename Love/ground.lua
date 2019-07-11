@@ -1,5 +1,3 @@
-require "utils"
-
 Ground = Object.extend(Object)
 
 function Ground:new(x, y, width, height, sprite)
