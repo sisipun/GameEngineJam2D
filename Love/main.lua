@@ -21,11 +21,18 @@ function love.update(dt)
 
     for i, row in ipairs(groundRows) do
         if (not row:wasPast() and row:getY() < player:getY()) then
-            score = score + 1
+            if (not row:wasLanded()) then
+                scoreFactor = scoreFactor + 1
+            end
+            score = score + 1 * scoreFactor
             row:setAsPast()
         end
         for i, ground in ipairs(row:getValues()) do
-            player:resolveCollision(ground)
+            collisionStatus = player:resolveCollision(ground)
+            if (collisionStatus == collisionStatuses.HORIZONTAL) then
+                row:setAsLanded()
+                scoreFactor = 1
+            end
         end
     end
     if (camera.y + gameHeight > lastGroundRow:getY() + distanceBetweenRows) then
@@ -68,4 +75,5 @@ function restart()
     camera.y = 0
 
     score = 0
+    scoreFactor = 1
 end
