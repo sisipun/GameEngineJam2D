@@ -20,6 +20,10 @@ function love.update(dt)
     camera.y = camera.y + (20 * dt)
 
     for i, row in ipairs(groundRows) do
+        if (not row:wasPast() and row:getY() < player:getY()) then
+            score = score + 1
+            row:setAsPast()
+        end
         for i, ground in ipairs(row:getValues()) do
             player:resolveCollision(ground)
         end
@@ -44,6 +48,9 @@ function love.draw()
     love.graphics.draw(background, camera.x, camera.y, 0, scaleX, scaleY)
     for i, row in ipairs(groundRows) do row:draw() end
     player:draw()
+    love.graphics.setColor(0, 0, 0)
+    love.graphics.print(string.format("Score: %s", score), camera.x + 20, camera.y + 20)
+    love.graphics.setColor(255, 255, 255)
 end
 
 function restart() 
@@ -59,4 +66,6 @@ function restart()
     camera = {}
     camera.x = 0
     camera.y = 0
+
+    score = 0
 end
