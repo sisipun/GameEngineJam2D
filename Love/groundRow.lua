@@ -8,6 +8,7 @@ function GroundRow:new(y, rowSize, elemWidth, elemHeight)
     self.values = {}
     self.y = y
     self.past = false
+    self.landed = false
 
     holeIndex = love.math.random(rowSize - 1)
 
@@ -36,4 +37,12 @@ end
 
 function GroundRow:wasPast()
     return self.past
+end
+
+function GroundRow:setAsLanded()
+    self.landed = true
+end
+
+function GroundRow:wasLanded()
+    return self.landed
 end
