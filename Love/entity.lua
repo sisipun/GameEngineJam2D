@@ -1,5 +1,11 @@
 Entity = Object.extend(Object)
 
+collisionStatuses = {
+    NONE = 0,
+    VERTICAL = 1,
+    HORIZONTAL = 2
+}
+
 function Entity:new(x, y, width, height, sprite)
     self.x = x
     self.y = y
@@ -44,18 +50,24 @@ function Entity:resolveCollision(e)
             if self.x + self.width / 2 < e.x + self.width / 2 then
                 local pushback = self.x + self.width - e.x
                 self.x = self.x - pushback
+                return collisionStatuses.VERTICAL
             else
                 local pushback = e.x + e.width - self.x
                 self.x = self.x + pushback
+                return collisionStatuses.VERTICAL
             end
         elseif self:wasHorizontallyAligned(e) then
             if self.y + self.height / 2 < e.y + self.height / 2 then
                 local pushback = self.y + self.height - e.y
                 self.y = self.y - pushback
+                return collisionStatuses.HORIZONTAL
             else
                 local pushback = e.y + e.height - self.y
                 self.y = self.y + pushback
+                return collisionStatuses.HORIZONTAL
             end
         end
     end
+
+    return collisionStatuses.NONE
 end
