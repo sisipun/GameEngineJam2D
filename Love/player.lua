@@ -1,20 +1,20 @@
-Player = Object.extend(Object)
+Player = Entity.extend(Entity)
 
-function Player:new(x, y, width, height, speed, sprite)
-    self.x = x
-    self.y = y
-    self.width = width
-    self.height = height
-    self.speed = speed
-    self.sprite = sprite
+function Player:new(x, y, width, height, horizontalVeloity, verticalVelocity, sprite)
+    Player.super.new(self, x, y, width, height, sprite)
+    self.horizontalVeloity = horizontalVeloity
+    self.verticalVelocity = verticalVelocity
 end
 
 function Player:update(dt)
-    if love.keyboard.isDown("right") then self.x = self.x + self.speed * dt end
-    if love.keyboard.isDown("left") then self.x = self.x - self.speed * dt end
+    Player.super.update(self, dt)
+    
+    if love.keyboard.isDown("right") then self.x = self.x + self.horizontalVeloity * dt end
+    if love.keyboard.isDown("left") then self.x = self.x - self.horizontalVeloity * dt end
+
+    self.y = self.y + self.verticalVelocity * dt
 end
 
-function Player:draw()
-    local scaleX, scaleY = getImageScaleForNewDimensions(self.sprite, self.width, self.height)
-    love.graphics.draw(self.sprite, self.x, self.y, 0, scaleX, scaleY)
+function Player:getY()
+    return self.y
 end
