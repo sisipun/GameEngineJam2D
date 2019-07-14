@@ -9,7 +9,7 @@ function GroundRow:new(y, rowSize, elemWidth, elemHeight)
     self.landed = false
 
     self.rowSize = rowSize
-    self.holeIndex = love.math.random(rowSize - 1)
+    self.holeIndex = love.math.random(2, rowSize - 2)
     self.elemWidth = elemWidth
 
     for i = 0, rowSize do
@@ -28,7 +28,7 @@ function GroundRow:addEnemy(enemySprite)
 end
 
 function GroundRow:update(dt, borders)
-    for i, value in ipairs(self.values) do value:update() end
+    for i, value in ipairs(self.values) do value:update(dt) end
     if (self.enemy ~= nil) then
         if (self.enemy:getX() < borders.x or (self.enemy:getIndex() > self.holeIndex and self.enemy:getX() <
             (self.holeIndex + 1) * self.elemWidth)) then
