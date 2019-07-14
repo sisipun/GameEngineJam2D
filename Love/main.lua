@@ -39,9 +39,18 @@ function love.update(dt)
         end
         for i, ground in ipairs(row:getValues()) do
             collisionStatus = player:resolveCollision(ground)
-            if (collisionStatus == collisionStatuses.HORIZONTAL) then
+            if (collisionStatus == collisionStatuses.BOTTOM) then
                 row:setAsLanded()
                 scoreFactor = 1
+            end
+        end
+        if (row:getEnemy() ~= nil) then
+            collisionStatus = player:resolveCollision(row:getEnemy())
+            if (collisionStatus == collisionStatuses.BOTTOM) then
+                row:killEnemy()
+                score = score + 1
+            elseif (collisionStatus == collisionStatuses.LEFT or collisionStatus == collisionStatuses.RIGHT) then
+                restart()
             end
         end
     end

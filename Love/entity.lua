@@ -2,8 +2,10 @@ Entity = Object.extend(Object)
 
 collisionStatuses = {
     NONE = 0,
-    VERTICAL = 1,
-    HORIZONTAL = 2
+    RIGHT = 1,
+    LEFT = 2,
+    BOTTOM = 3,
+    TOP = 4
 }
 
 function Entity:new(x, y, width, height, weight, sprite)
@@ -58,11 +60,11 @@ function Entity:resolveCollision(e)
             if self.x + self.width < e.x + self.width then
                 local pushback = self.x + self.width - e.x
                 self.x = self.x - pushback
-                return collisionStatuses.VERTICAL
+                return collisionStatuses.RIGHT
             else
                 local pushback = e.x + e.width - self.x
                 self.x = self.x + pushback
-                return collisionStatuses.VERTICAL
+                return collisionStatuses.LEFT
             end
         elseif self:wasHorizontallyAligned(e) then
             if self.y + self.height < e.y + self.height then
@@ -72,11 +74,11 @@ function Entity:resolveCollision(e)
                     self.gravity = 0
                 end
                 self.canJump = true
-                return collisionStatuses.HORIZONTAL
+                return collisionStatuses.BOTTOM
             else
                 local pushback = e.y + e.height - self.y
                 self.y = self.y + pushback
-                return collisionStatuses.HORIZONTAL
+                return collisionStatuses.TOP
             end
         end
     end

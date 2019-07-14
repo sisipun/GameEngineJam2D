@@ -53,6 +53,8 @@ end
 
 function GroundRow:getEnemy() return self.enemy end
 
+function GroundRow:killEnemy() self.enemy = nil end
+
 function GroundRow:getY() return self.y end
 
 function GroundRow:getValues() return self.values end
