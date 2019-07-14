@@ -25,7 +25,6 @@ function love.load()
 end
 
 function love.update(dt)
-    player:update(dt, borders)
     camera.y = camera.y + (20 * dt)
 
     for i, row in ipairs(groundRows) do
@@ -59,6 +58,8 @@ function love.update(dt)
         camera.y = player:getY() - gameHeight / 2
     end
     if (camera.y > player:getY()) then restart() end
+
+    player:update(dt, borders)
 end
 
 function love.draw()

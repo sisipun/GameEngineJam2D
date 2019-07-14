@@ -6,7 +6,7 @@ collisionStatuses = {
     HORIZONTAL = 2
 }
 
-function Entity:new(x, y, width, height, sprite)
+function Entity:new(x, y, width, height, weight, sprite)
     self.x = x
     self.y = y
     self.width = width
@@ -16,11 +16,19 @@ function Entity:new(x, y, width, height, sprite)
     self.last = {}
     self.last.x = self.x
     self.last.y = self.y
+
+    self.gravity = 0
+    self.weight = weight
+    self.canJump = false
 end
 
 function Entity:update(dt)
     self.last.x = self.x
     self.last.y = self.y
+
+    self.gravity = self.gravity + self.weight * dt
+
+    self.y = self.y + self.gravity * dt
 end
 
 function Entity:draw()
@@ -47,7 +55,7 @@ end
 function Entity:resolveCollision(e)
     if self:checkCollision(e) then
         if self:wasVerticallyAligned(e) then
-            if self.x + self.width / 2 < e.x + self.width / 2 then
+            if self.x + self.width < e.x + self.width then
                 local pushback = self.x + self.width - e.x
                 self.x = self.x - pushback
                 return collisionStatuses.VERTICAL
@@ -57,9 +65,13 @@ function Entity:resolveCollision(e)
                 return collisionStatuses.VERTICAL
             end
         elseif self:wasHorizontallyAligned(e) then
-            if self.y + self.height / 2 < e.y + self.height / 2 then
+            if self.y + self.height < e.y + self.height then
                 local pushback = self.y + self.height - e.y
                 self.y = self.y - pushback
+                if (self.gravity > 0) then
+                    self.gravity = 0
+                end
+                self.canJump = true
                 return collisionStatuses.HORIZONTAL
             else
                 local pushback = e.y + e.height - self.y

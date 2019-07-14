@@ -1,10 +1,8 @@
 Enemy = Entity.extend(Entity)
 
-function Enemy:new(index, x, y, width, height, horizontalVeloity,
-                   verticalVelocity, sprite)
-    Player.super.new(self, x, y, width, height, sprite)
+function Enemy:new(index, x, y, width, height, horizontalVeloity, weight, sprite)
+    Player.super.new(self, x, y, width, height, weight, sprite)
     self.horizontalVeloity = horizontalVeloity
-    self.verticalVelocity = verticalVelocity
     self.direction = 1
     self.index = index
 end
@@ -13,7 +11,6 @@ function Enemy:update(dt)
     Enemy.super.update(self, dt)
 
     self.x = self.x + self.horizontalVeloity * self.direction * dt
-    self.y = self.y + self.verticalVelocity * dt
 end
 
 function Enemy:getX() return self.x end
