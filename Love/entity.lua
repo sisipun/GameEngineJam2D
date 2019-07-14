@@ -1,12 +1,6 @@
 Entity = Object.extend(Object)
 
-collisionStatuses = {
-    NONE = 0,
-    RIGHT = 1,
-    LEFT = 2,
-    BOTTOM = 3,
-    TOP = 4
-}
+collisionStatuses = {NONE = 0, RIGHT = 1, LEFT = 2, BOTTOM = 3, TOP = 4}
 
 function Entity:new(x, y, width, height, weight, sprite)
     self.x = x
@@ -70,9 +64,7 @@ function Entity:resolveCollision(e)
             if self.y + self.height < e.y + self.height then
                 local pushback = self.y + self.height - e.y
                 self.y = self.y - pushback
-                if (self.gravity > 0) then
-                    self.gravity = 0
-                end
+                if (self.gravity > 0) then self.gravity = 0 end
                 self.canJump = true
                 return collisionStatuses.BOTTOM
             else

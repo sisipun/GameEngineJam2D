@@ -12,6 +12,9 @@ function love.load()
     enemySprite = love.graphics.newImage("assets/monster_single.png")
     groundSprite = love.graphics.newImage("assets/ground_single.png")
     background = love.graphics.newImage("assets/background.png")
+    scoreSong = love.audio.newSource("assets/score.mp3", "stream")
+    killSong = love.audio.newSource("assets/enemy_kill.wav", "stream")
+    deathSong = love.audio.newSource("assets/death.wav", "stream")
     gameWidth = love.graphics.getWidth()
     gameHeight = love.graphics.getHeight()
 
@@ -34,6 +37,7 @@ function love.update(dt)
             if (not row:wasLanded()) then
                 scoreFactor = scoreFactor + 1
             end
+            scoreSong:play()
             score = score + 1 * scoreFactor
             row:setAsPast()
         end
@@ -47,9 +51,12 @@ function love.update(dt)
         if (row:getEnemy() ~= nil) then
             collisionStatus = player:resolveCollision(row:getEnemy())
             if (collisionStatus == collisionStatuses.BOTTOM) then
+                killSong:play()
                 row:killEnemy()
                 score = score + 1
-            elseif (collisionStatus == collisionStatuses.LEFT or collisionStatus == collisionStatuses.RIGHT) then
+            elseif (collisionStatus == collisionStatuses.LEFT or collisionStatus ==
+                collisionStatuses.RIGHT) then
+                deathSong:play()
                 restart()
             end
         end
@@ -66,7 +73,10 @@ function love.update(dt)
     if (player:getY() > camera.y + gameHeight / 2) then
         camera.y = player:getY() - gameHeight / 2
     end
-    if (camera.y > player:getY()) then restart() end
+    if (camera.y > player:getY()) then
+        deathSong:play()
+        restart()
+    end
 
     player:update(dt, borders)
 end
