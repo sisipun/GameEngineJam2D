@@ -23,22 +23,24 @@ end
 function GroundRow:addEnemy(enemySprite)
     position = love.math.random(0, self.rowSize)
     if (position == self.holeIndex) then position = position + 1 end
-    self.enemy = Enemy(position, position * self.elemWidth, self.y - 50, 50, 50, 150, 200,
-                       enemySprite)
+    self.enemy = Enemy(position, position * self.elemWidth, self.y - 50, 50, 50,
+                       150, 200, enemySprite)
 end
 
 function GroundRow:update(dt, borders)
     for i, value in ipairs(self.values) do value:update(dt) end
     if (self.enemy ~= nil) then
-        if (self.enemy:getX() < borders.x or (self.enemy:getIndex() > self.holeIndex and self.enemy:getX() <
-            (self.holeIndex + 1) * self.elemWidth)) then
+        if (self.enemy:getX() < borders.x or
+            (self.enemy:getIndex() > self.holeIndex and self.enemy:getX() <
+                (self.holeIndex + 1) * self.elemWidth)) then
             self.enemy:moveRight()
         end
         if (self.enemy:getX() + self.enemy:getWidth() > borders.x +
-            borders.width or (self.enemy:getIndex() < self.holeIndex and self.enemy:getX() + self.enemy:getWidth() >
-            self.holeIndex * self.elemWidth)) then 
-                self.enemy:moveLeft() 
-            end
+            borders.width or
+            (self.enemy:getIndex() < self.holeIndex and self.enemy:getX() +
+                self.enemy:getWidth() > self.holeIndex * self.elemWidth)) then
+            self.enemy:moveLeft()
+        end
         self.enemy:update(dt)
     end
 end
