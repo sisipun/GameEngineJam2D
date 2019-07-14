@@ -6,11 +6,11 @@ function Player:new(x, y, width, height, horizontalVeloity, verticalVelocity, sp
     self.verticalVelocity = verticalVelocity
 end
 
-function Player:update(dt)
+function Player:update(dt, borders)
     Player.super.update(self, dt)
     
-    if love.keyboard.isDown("right") then self.x = self.x + self.horizontalVeloity * dt end
-    if love.keyboard.isDown("left") then self.x = self.x - self.horizontalVeloity * dt end
+    if (love.keyboard.isDown("right") and self.x + self.width < borders.x + borders.width) then self.x = self.x + self.horizontalVeloity * dt end
+    if (love.keyboard.isDown("left") and self.x > borders.x) then self.x = self.x - self.horizontalVeloity * dt end
 
     self.y = self.y + self.verticalVelocity * dt
 end
