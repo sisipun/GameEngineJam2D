@@ -23,12 +23,14 @@ function love.load()
     groundRowSize = 15
     distanceBetweenRows = 300
     enemyChance = 1
+    cameraVelocity = 50
 
     restart()
 end
 
 function love.update(dt)
-    camera.y = camera.y + (20 * dt)
+    camera.y = camera.y + (cameraVelocity * dt)
+    player:update(dt, borders)
 
     for i, row in ipairs(groundRows) do
         row:update(dt, borders)
@@ -77,8 +79,6 @@ function love.update(dt)
         deathSong:play()
         restart()
     end
-
-    player:update(dt, borders)
 end
 
 function love.draw()
@@ -102,7 +102,7 @@ function love.draw()
 end
 
 function restart()
-    player = Player(100, 100, 30, 50, 150, 200, playerSprite)
+    player = Player(100, 100, 30, 50, 300, 250, playerSprite)
 
     groundRows = {}
     lastGroundRow = GroundRow(initGroundY, groundRowSize, 50, 50)
