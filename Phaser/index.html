@@ -29,6 +29,9 @@
         var game = new Phaser.Game(config);
 
         function preload() {
+            distanceBetweenGroups = 300
+            backgroundVelocity = 50
+
             this.load.image('hero', 'assets/hero_single.png');
             this.load.image('ground', 'assets/ground_single.png');
             this.load.image('background', 'assets/background.png');
@@ -38,15 +41,10 @@
             camera = this.cameras.main
             background = this.physics.add.sprite(camera.midPoint.x, camera.midPoint.y, 'background')
             background.body.setAllowGravity(false)
-            hero = this.physics.add.sprite(200, 100, 'hero');
-            hero.setCollideWorldBounds(true);
-            hero.setBounce(0.2)
-            hero.setScale(0.5, 0.5);
-            grounds = this.physics.add.staticGroup();
-            grounds.create(200, 400, 'ground').setScale(0.5, 0.5).refreshBody();
-            this.physics.add.collider(hero, grounds);
+            hero = createHero(this.physics, 200, 100)
+            lastGroup = createGroup(this.physics, 400, hero)
             camera.startFollow(background)
-            background.setVelocityY(50)
+            background.setVelocityY(backgroundVelocity)
         }
 
         function update() {
@@ -60,6 +58,44 @@
             else {
                 hero.setVelocityX(0);
             }
+            if (camera.worldView.bottom - distanceBetweenGroups > lastGroup.positionY) {
+                lastGroup = createGroup(this.physics, camera.worldView.bottom + 50, hero)
+            }
+            if (hero.body.velocity.y != 0 && camera.worldView.centerY < hero.body.y) {
+                background.setVelocityY(hero.body.velocity.y)
+            } else {
+                background.setVelocityY(backgroundVelocity)
+            }
+        }
+
+        function createGroup(physics, y, hero) {
+            const groundsInGroupNumber = 16
+            const groundSize = 50
+            group = physics.add.staticGroup();
+            const holeIndex = Phaser.Math.Between(2, groundsInGroupNumber - 2)
+            for (var i = 0; i < groundsInGroupNumber; i++) {
+                if (holeIndex != i) {
+                    ground = group.create(i * groundSize, y, 'ground');
+                    ground.setOrigin(0, 0);
+                    ground.displayWidth = groundSize;
+                    ground.displayHeight = groundSize;
+                    ground.refreshBody();
+                }
+            }
+            physics.add.collider(hero, group);
+            return {
+                value: group,
+                positionY: y
+            };
+        }
+
+        function createHero(physics, x, y) {
+            const heroWidth = 30
+            const heroHeight = 50
+            hero = physics.add.sprite(x, y, 'hero');
+            hero.displayWidth = heroWidth;
+            hero.displayHeight = heroHeight;    
+            return hero    
         }
     </script>
 
