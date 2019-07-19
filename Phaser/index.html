@@ -3,6 +3,8 @@
 
 <head>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.15.1/dist/phaser-arcade-physics.min.js"></script>
+    <script src="/js/hero.js"></script>
+    <script src="/js/group.js"></script>
 </head>
 
 <body>
@@ -29,73 +31,76 @@
         var game = new Phaser.Game(config);
 
         function preload() {
-            distanceBetweenGroups = 300
+            // Constants
             backgroundVelocity = 50
 
+            heroWidth = 30
+            heroHeight = 50
+            heroVelocity = 300
+
+            distanceBetweenGroups = 300
+            groundGroupParticipantsNumber = 16
+            groundSize = 50
+            holeSize = 40
+
+            scorePositionX = 50
+            scorePositionY = -280
+
+            // Global varibles
+            score = 0
+            scoreFactor = 1
+
+            // Assets
             this.load.image('hero', 'assets/hero_single.png');
             this.load.image('ground', 'assets/ground_single.png');
             this.load.image('background', 'assets/background.png');
+            this.load.image('empty', 'assets/empty.png');
         }
 
         function create() {
             camera = this.cameras.main
+
             background = this.physics.add.sprite(camera.midPoint.x, camera.midPoint.y, 'background')
             background.body.setAllowGravity(false)
-            hero = createHero(this.physics, 200, 100)
-            lastGroup = createGroup(this.physics, 400, hero)
-            camera.startFollow(background)
             background.setVelocityY(backgroundVelocity)
+            camera.startFollow(background)
+
+            hero = createHero(this, 200, 100)
+
+            lastGroup = createGroup(this, 400, hero)
+
+            scoreText = this.add.text(scorePositionX, camera.worldView.top + scorePositionY, 'score: ' + score, { fontSize: '16px', fill: '#000' });
         }
 
         function update() {
             cursors = this.input.keyboard.createCursorKeys();
             if (cursors.left.isDown) {
-                hero.setVelocityX(-160);
+                hero.setVelocityX(-heroVelocity);
             }
             else if (cursors.right.isDown) {
-                hero.setVelocityX(160);
+                hero.setVelocityX(heroVelocity);
             }
             else {
                 hero.setVelocityX(0);
             }
+
             if (camera.worldView.bottom - distanceBetweenGroups > lastGroup.positionY) {
-                lastGroup = createGroup(this.physics, camera.worldView.bottom + 50, hero)
+                lastGroup = createGroup(this, camera.worldView.bottom + 50, hero)
             }
-            if (hero.body.velocity.y != 0 && camera.worldView.centerY < hero.body.y) {
+
+            if (camera.worldView.centerY < hero.body.y && hero.body.velocity.y != 0) {
                 background.setVelocityY(hero.body.velocity.y)
             } else {
                 background.setVelocityY(backgroundVelocity)
             }
-        }
 
-        function createGroup(physics, y, hero) {
-            const groundsInGroupNumber = 16
-            const groundSize = 50
-            group = physics.add.staticGroup();
-            const holeIndex = Phaser.Math.Between(2, groundsInGroupNumber - 2)
-            for (var i = 0; i < groundsInGroupNumber; i++) {
-                if (holeIndex != i) {
-                    ground = group.create(i * groundSize, y, 'ground');
-                    ground.setOrigin(0, 0);
-                    ground.displayWidth = groundSize;
-                    ground.displayHeight = groundSize;
-                    ground.refreshBody();
-                }
+            if (camera.worldView.top > hero.body.bottom) {
+                this.scene.start()
             }
-            physics.add.collider(hero, group);
-            return {
-                value: group,
-                positionY: y
-            };
-        }
 
-        function createHero(physics, x, y) {
-            const heroWidth = 30
-            const heroHeight = 50
-            hero = physics.add.sprite(x, y, 'hero');
-            hero.displayWidth = heroWidth;
-            hero.displayHeight = heroHeight;    
-            return hero    
+            scoreText.destroy()
+
+            scoreText = this.add.text(scorePositionX, background.y + scorePositionY, 'score: ' + score, { fontSize: '16px', fill: '#000' });
         }
     </script>
 
