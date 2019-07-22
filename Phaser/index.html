@@ -38,6 +38,10 @@
             heroHeight = 50
             heroVelocity = 300
 
+            enemyWidth = 50
+            enemyHeight = 50
+            enemyVelocity = 150
+
             distanceBetweenGroups = 300
             groundGroupParticipantsNumber = 16
             groundSize = 50
@@ -52,6 +56,7 @@
 
             // Assets
             this.load.image('hero', 'assets/hero_single.png');
+            this.load.image('enemy', 'assets/enemy_single.png');
             this.load.image('ground', 'assets/ground_single.png');
             this.load.image('background', 'assets/background.png');
             this.load.image('empty', 'assets/empty.png');
@@ -65,10 +70,10 @@
             background.setVelocityY(backgroundVelocity)
             camera.startFollow(background)
 
-            hero = createHero(this, 200, 100)
+            hero = createHero(this, 200, 100, heroWidth, heroHeight)
 
-            lastGroup = createGroup(this, 400, hero)
-
+            lastGroup = createGroup(this, 400, groundSize, holeSize, groundGroupParticipantsNumber, enemyWidth, enemyHeight, enemyVelocity, hero)
+            groups = [lastGroup]
             scoreText = this.add.text(scorePositionX, camera.worldView.top + scorePositionY, 'score: ' + score, { fontSize: '16px', fill: '#000' });
         }
 
@@ -85,7 +90,8 @@
             }
 
             if (camera.worldView.bottom - distanceBetweenGroups > lastGroup.positionY) {
-                lastGroup = createGroup(this, camera.worldView.bottom + 50, hero)
+                lastGroup = createGroup(this, camera.worldView.bottom + 50, groundSize, holeSize, groundGroupParticipantsNumber, enemyWidth, enemyHeight, enemyVelocity, hero)
+                groups.push(lastGroup)
             }
 
             if (camera.worldView.centerY < hero.body.y && hero.body.velocity.y != 0) {
@@ -97,6 +103,10 @@
             if (camera.worldView.top > hero.body.bottom) {
                 this.scene.start()
             }
+
+            groups.forEach(group => {
+                groupUpdate(group, 0, 800)
+            });
 
             scoreText.destroy()
 

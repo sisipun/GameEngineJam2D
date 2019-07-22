@@ -1,4 +1,4 @@
-function createGroup(game, y, hero) {
+function createGroup(game, y, groundSize, holeSize, groundGroupParticipantsNumber, enemyWidth, enemyHeight, enemyVelocity, hero) {
     groundGroup = game.physics.add.staticGroup();
     holeGroup = game.physics.add.staticGroup();
 
@@ -17,13 +17,52 @@ function createGroup(game, y, hero) {
         groupElement.refreshBody();
     }
 
+    orientation = Phaser.Math.Between(0, 1)
+    if (!orientation) {
+        orientation = -1
+    }
+
+    enemy = createEnemy(game, (holeIndex + 2 * orientation) * groundSize + enemyWidth, y - enemyHeight, enemyWidth, enemyHeight, orientation * Math.abs(enemyVelocity));
+
     game.physics.add.collider(hero, groundGroup, collideGround, null, game);
+    game.physics.add.collider(enemy, groundGroup);
     game.physics.add.overlap(hero, holeGroup, overlapHole, null, game);
 
     return {
         value: groundGroup,
-        positionY: y
+        positionY: y,
+        enemy: {
+            value: enemy,
+            velocity: enemyVelocity,
+            rightOrientation: orientation === 1
+        },
+        holeIndex: holeIndex,
+        groundSize: groundSize
     };
+}
+
+function createEnemy(game, x, y, enemyWidth, enemyHeight, enemyVelocity) {
+    enemy = game.physics.add.sprite(x, y, 'enemy');
+    enemy.displayWidth = enemyWidth;
+    enemy.displayHeight = enemyHeight;
+    enemy.setVelocityX(enemyVelocity)
+    return enemy;
+}
+
+function groupUpdate(group, leftBorder, rightBorder) {
+    if (group.enemy.rightOrientation) {
+        if (group.enemy.value.x + group.enemy.value.displayWidth / 2 > rightBorder) {
+            group.enemy.value.setVelocityX(-group.enemy.velocity)
+        } else if (group.enemy.value.x - group.enemy.value.displayWidth / 2 < (group.holeIndex * group.groundSize) + group.groundSize) {
+            group.enemy.value.setVelocityX(group.enemy.velocity)
+        }
+    } else if (!group.enemy.rightOrientation) {
+        if (group.enemy.value.x - group.enemy.value.displayWidth / 2 < leftBorder) {
+            group.enemy.value.setVelocityX(group.enemy.velocity)
+        } else if (group.enemy.value.x + group.enemy.value.displayWidth / 2 > group.holeIndex * group.groundSize) {
+            group.enemy.value.setVelocityX(-group.enemy.velocity)
+        }
+    }
 }
 
 function collideGround() {
