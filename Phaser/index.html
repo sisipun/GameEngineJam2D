@@ -61,6 +61,9 @@
             this.load.image('ground', 'assets/ground_single.png');
             this.load.image('background', 'assets/background.png');
             this.load.image('empty', 'assets/empty.png');
+            this.load.audio('death', 'assets/death.wav');
+            this.load.audio('enemy_kill', 'assets/enemy_kill.wav');
+            this.load.audio('score', 'assets/score.mp3')
         }
 
         function create() {
@@ -107,6 +110,7 @@
 
             if (camera.worldView.top > hero.body.bottom) {
                 this.scene.start()
+                this.sound.play('death');
             }
 
             groups.forEach(group => {

@@ -75,13 +75,16 @@ function overlapHole(hero, hole) {
     scoreFactor += 1
     hole.disableBody(true, true);
     scoreText.setText('score: ' + score)
+    this.sound.play('score');
 }
 
 function overlapEnemy(hero, enemy) {
     if (hero.y < enemy.y - enemy.displayWidth / 2) {
         enemy.disableBody(true, true);
         score += 1
+        this.sound.play('enemy_kill');
     } else {
         this.scene.start()
+        this.sound.play('death');
     }
 }
