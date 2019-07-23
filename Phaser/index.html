@@ -37,6 +37,7 @@
             heroWidth = 30
             heroHeight = 50
             heroVelocity = 300
+            heroJumpVelocity = 250
 
             enemyWidth = 50
             enemyHeight = 50
@@ -87,6 +88,10 @@
             }
             else {
                 hero.setVelocityX(0);
+            }
+
+            if (cursors.space.isDown && hero.body.touching.down) {
+                hero.setVelocityY(-heroJumpVelocity);
             }
 
             if (camera.worldView.bottom - distanceBetweenGroups > lastGroup.positionY) {
