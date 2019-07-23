@@ -27,6 +27,7 @@ function createGroup(game, y, groundSize, holeSize, groundGroupParticipantsNumbe
     game.physics.add.collider(hero, groundGroup, collideGround, null, game);
     game.physics.add.collider(enemy, groundGroup);
     game.physics.add.overlap(hero, holeGroup, overlapHole, null, game);
+    game.physics.add.overlap(hero, enemy, overlapEnemy, null, game);
 
     return {
         value: groundGroup,
@@ -74,4 +75,12 @@ function overlapHole(hero, hole) {
     scoreFactor += 1
     hole.disableBody(true, true);
     scoreText.setText('score: ' + score)
+}
+
+function overlapEnemy(hero, enemy) {
+    if (hero.y < enemy.y - enemy.displayWidth / 2) {
+        enemy.disableBody(true, true);
+    } else {
+        this.scene.start()
+    } 
 }
