@@ -22,7 +22,7 @@ function createGroup(game, y, groundSize, holeSize, groundGroupParticipantsNumbe
         orientation = -1
     }
 
-    enemy = createEnemy(game, (holeIndex + 2 * orientation) * groundSize + enemyWidth, y - enemyHeight, enemyWidth, enemyHeight, orientation * Math.abs(enemyVelocity));
+    enemy = createEnemy(game, (holeIndex + 2 * orientation) * groundSize + enemyWidth, y - enemyHeight / 2, enemyWidth, enemyHeight, orientation * Math.abs(enemyVelocity));
 
     game.physics.add.collider(hero, groundGroup, collideGround, null, game);
     game.physics.add.collider(enemy, groundGroup);
@@ -80,7 +80,8 @@ function overlapHole(hero, hole) {
 function overlapEnemy(hero, enemy) {
     if (hero.y < enemy.y - enemy.displayWidth / 2) {
         enemy.disableBody(true, true);
+        score += 1
     } else {
         this.scene.start()
-    } 
+    }
 }
