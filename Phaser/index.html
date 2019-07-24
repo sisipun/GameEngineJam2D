@@ -4,7 +4,7 @@
 <head>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.15.1/dist/phaser-arcade-physics.min.js"></script>
     <script src="/js/hero.js"></script>
-    <script src="/js/group.js"></script>
+    <script src="/js/groundGroup.js"></script>
 </head>
 
 <body>
@@ -49,21 +49,21 @@
             holeSize = 40
 
             scorePositionX = 50
-            scorePositionY = -280
+            scorePositionY = 280
 
             // Global varibles
             score = 0
             scoreFactor = 1
 
             // Assets
-            this.load.image('hero', 'assets/hero_single.png');
+            this.load.spritesheet('hero', 'assets/hero_single.png', { frameWidth: 80, frameHeight: 140 });
             this.load.image('enemy', 'assets/enemy_single.png');
             this.load.image('ground', 'assets/ground_single.png');
             this.load.image('background', 'assets/background.png');
             this.load.image('empty', 'assets/empty.png');
             this.load.audio('death', 'assets/death.wav');
             this.load.audio('enemy_kill', 'assets/enemy_kill.wav');
-            this.load.audio('score', 'assets/score.mp3')
+            this.load.audio('score', 'assets/score.mp3');
         }
 
         function create() {
@@ -78,11 +78,12 @@
 
             lastGroup = createGroup(this, 400, groundSize, holeSize, groundGroupParticipantsNumber, enemyWidth, enemyHeight, enemyVelocity, hero)
             groups = [lastGroup]
-            scoreText = this.add.text(scorePositionX, camera.worldView.top + scorePositionY, 'score: ' + score, { fontSize: '16px', fill: '#000' });
+            scoreText = this.add.text(scorePositionX, camera.worldView.top - scorePositionY, 'score: ' + score, { fontSize: '16px', fill: '#000' });
         }
 
         function update() {
             cursors = this.input.keyboard.createCursorKeys();
+
             if (cursors.left.isDown) {
                 hero.setVelocityX(-heroVelocity);
             }
@@ -113,13 +114,10 @@
                 this.sound.play('death');
             }
 
-            groups.forEach(group => {
-                groupUpdate(group, 0, 800)
-            });
+            groups.forEach(group => {groupUpdate(group, 0, 800)});
 
             scoreText.destroy()
-
-            scoreText = this.add.text(scorePositionX, background.y + scorePositionY, 'score: ' + score, { fontSize: '16px', fill: '#000' });
+            scoreText = this.add.text(scorePositionX, background.y - scorePositionY, 'score: ' + score, { fontSize: '16px', fill: '#000' });
         }
     </script>
 

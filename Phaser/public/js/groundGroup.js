@@ -2,7 +2,7 @@ function createGroup(game, y, groundSize, holeSize, groundGroupParticipantsNumbe
     groundGroup = game.physics.add.staticGroup();
     holeGroup = game.physics.add.staticGroup();
 
-    const holeIndex = Phaser.Math.Between(2, groundGroupParticipantsNumber - 2);
+    const holeIndex = Phaser.Math.Between(3, groundGroupParticipantsNumber - 3);
     for (var i = 0; i < groundGroupParticipantsNumber; i++) {
         if (holeIndex != i) {
             groupElement = groundGroup.create(i * groundSize, y, 'ground');
