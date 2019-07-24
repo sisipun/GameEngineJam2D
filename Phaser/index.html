@@ -82,6 +82,7 @@
         }
 
         function update() {
+            hero.anims.play('stay')
             cursors = this.input.keyboard.createCursorKeys();
 
             if (cursors.left.isDown) {
