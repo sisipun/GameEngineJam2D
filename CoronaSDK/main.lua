@@ -23,6 +23,12 @@ local physics = require("physics")
 physics.setGravity(0, 7)
 physics.start()
 
+-- Walls
+leftWall = display.newRect(display.screenOriginX, 0, 0, display.contentHeight)
+rightWall = display.newRect(display.contentWidth, 0, 0, display.contentHeight)
+physics.addBody(leftWall, "static", {density=400, friction = 0.0, bounce = 0.0})
+physics.addBody(rightWall, "static", {density=400, friction = 0.0, bounce = 0.0})
+
 -- Hero
 local hero = Hero(display.newImageRect("assets/hero_single.png", 30, 50),
                   display.contentCenterX - 50, display.contentCenterY - 50, 150,
