@@ -1,3 +1,5 @@
+local composer = require("composer")
+
 local background = display.newImageRect("assets/background.png",
                                         display.contentWidth,
                                         display.contentHeight)
@@ -64,5 +66,23 @@ local function moveGrous(event)
 end
 
 Runtime:addEventListener("enterFrame", moveGrous)
+
+local function checkDeath()
+    if (display.screenOriginY > hero.y) then
+        background.x = display.contentCenterX
+        background.y = display.contentCenterY
+        hero.x = display.contentCenterX
+        hero.y = display.contentCenterY
+        for i, group in ipairs(groups) do
+            for i, ground in ipairs(group) do
+                display.remove(ground)
+            end
+        end
+        groups = {}
+        generateGroundRow()
+    end
+end
+
+Runtime:addEventListener("enterFrame", checkDeath)
 
 generateGroundRow()
