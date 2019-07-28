@@ -12,6 +12,7 @@ background.y = display.contentCenterY
 
 -- Score
 local score = 0
+local scoreFactor = 1
 local scoreText = display.newText("Score: " .. score, 60, 50, 100, 50,
                                   native.systemFont, 15)
                                   scoreText:setFillColor(0, 0, 0)
@@ -30,13 +31,14 @@ Runtime:addEventListener("touch", hero)
 
 -- Ground Rows
 local rows = {}
-local groupGenerationBorder = display.contentHeight / 2
+local groupGenerationBorder = display.contentHeight / 1.5
 
 local function generateGroundRow()
     if (lastRow == nil or lastRow:getY() < groupGenerationBorder) then
         local row = GroundRow(display.contentHeight + 100, 7, 50, physics,
                               display)
         Runtime:addEventListener("enterFrame", row)
+        Runtime:addEventListener("collision", row)
         table.insert(rows, row)
         lastRow = row
     end
@@ -66,7 +68,12 @@ Runtime:addEventListener("enterFrame", checkDeath)
 local function checkScore()
     for i, row in ipairs(rows) do
         if (not row:wasPast() and row:getY() < hero:getBody().y) then
-            score = score + 1
+            if (row:wasTouched()) then
+                scoreFactor = 1
+            else
+                scoreFactor = scoreFactor + 1 
+            end
+            score = score + (1 * scoreFactor)
             row:setAsPast()
         end
     end

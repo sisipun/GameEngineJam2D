@@ -4,6 +4,7 @@ function GroundRow:new(y, rowSize, elemWidth, physics, display)
     self.values = {}
     self.y = y
     self.past = false
+    self.touched = false
     holeIndex = math.random(2, rowSize - 2)
     for i = 0, rowSize do
         if (i ~= holeIndex) then
@@ -28,8 +29,16 @@ function GroundRow:enterFrame(event)
     end
 end
 
+function GroundRow:collision(event)
+    self.touched = true
+end
+
 function GroundRow:wasPast()
     return self.past
+end
+
+function GroundRow:wasTouched()
+    return self.touched
 end
 
 function GroundRow:setAsPast()
