@@ -8,26 +8,22 @@ local hero = display.newImageRect("assets/hero_single.png", 30, 50)
 hero.x = display.contentCenterX
 hero.y = display.contentCenterY
 
-local ground = display.newImageRect("assets/ground_single.png", 50, 50)
-ground.x = display.contentCenterX
-ground.y = display.contentCenterY + 100
-
 local physics = require("physics")
-physics.setGravity(2, 6)
 physics.start()
 
-physics.addBody(ground, "static")
 physics.addBody(hero, "dynamic")
 hero.isFixedRotation = true
 
-motionX = 0
+local motionX = 0
+local groups = {}
+local groupGenerationBorder = display.contentHeight / 2
 
-function playerVelocity(event)
+local function playerVelocity(event)
     if (event.phase == "began") then
         if event.x >= display.contentCenterX then
-            motionX = 1
+            motionX = 2
         elseif event.x <= display.contentCenterX then
-            motionX = -1
+            motionX = -2
         end
     elseif (event.phase == "ended") then
         motionX = 0
@@ -40,6 +36,33 @@ local function moveHero(event) hero.x = hero.x + motionX end
 
 Runtime:addEventListener("enterFrame", moveHero)
 
-local function moveGround(event) ground.y = ground.y - 1 end
+local function generateGroundRow()
+    holeIndex = math.random(2, 5)
+    group = {}
+    for i = 0, 7 do
+        if (i ~= holeIndex) then
+            local ground = display.newImageRect("assets/ground_single.png", 50,
+                                                50)
+            ground.x = i * 50
+            ground.y = display.contentHeight + 100
+            physics.addBody(ground, "static")
+            table.insert(group, ground)
+        end
+    end
+    table.insert(groups, group)
+end
 
-Runtime:addEventListener("enterFrame", moveGround)
+local function moveGrous(event)
+    local groupY = 0
+    for i, group in ipairs(groups) do
+        for i, ground in ipairs(group) do
+            ground.y = ground.y - 1
+            groupY = ground.y
+        end
+    end
+    if groupY < groupGenerationBorder then generateGroundRow() end
+end
+
+Runtime:addEventListener("enterFrame", moveGrous)
+
+generateGroundRow()
