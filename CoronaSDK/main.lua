@@ -13,10 +13,12 @@ ground.x = display.contentCenterX
 ground.y = display.contentCenterY + 100
 
 local physics = require("physics")
+physics.setGravity(2, 6)
 physics.start()
 
 physics.addBody(ground, "static")
 physics.addBody(hero, "dynamic")
+hero.isFixedRotation = true
 
 motionX = 0
 
@@ -34,8 +36,10 @@ end
 
 Runtime:addEventListener("touch", playerVelocity)
 
-local function moveHero(event)
-    hero.x = hero.x + motionX
-end
+local function moveHero(event) hero.x = hero.x + motionX end
 
 Runtime:addEventListener("enterFrame", moveHero)
+
+local function moveGround(event) ground.y = ground.y - 1 end
+
+Runtime:addEventListener("enterFrame", moveGround)
