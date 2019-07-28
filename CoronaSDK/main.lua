@@ -1,88 +1,75 @@
-local composer = require("composer")
+Object = require "object"
+require "entity"
+require "hero"
+require "groundRow"
 
+-- Background
 local background = display.newImageRect("assets/background.png",
                                         display.contentWidth,
                                         display.contentHeight)
 background.x = display.contentCenterX
 background.y = display.contentCenterY
 
-local hero = display.newImageRect("assets/hero_single.png", 30, 50)
-hero.x = display.contentCenterX
-hero.y = display.contentCenterY
+-- Score
+local score = 0
+local scoreText = display.newText("Score: " .. score, 60, 50, 100, 50,
+                                  native.systemFont, 15)
+                                  scoreText:setFillColor(0, 0, 0)
+local function updateText() scoreText.text = "Score: " .. score end
+Runtime:addEventListener("enterFrame", updateText)
 
+-- Physics
 local physics = require("physics")
 physics.start()
 
-physics.addBody(hero, "dynamic")
-hero.isFixedRotation = true
+-- Hero
+local hero = Hero(display.newImageRect("assets/hero_single.png", 30, 50),
+                  display.contentCenterX, display.contentCenterY, physics)
+Runtime:addEventListener("enterFrame", hero)
+Runtime:addEventListener("touch", hero)
 
-local motionX = 0
-local groups = {}
+-- Ground Rows
+local rows = {}
 local groupGenerationBorder = display.contentHeight / 2
 
-local function playerVelocity(event)
-    if (event.phase == "began") then
-        if event.x >= display.contentCenterX then
-            motionX = 2
-        elseif event.x <= display.contentCenterX then
-            motionX = -2
-        end
-    elseif (event.phase == "ended") then
-        motionX = 0
-    end
-end
-
-Runtime:addEventListener("touch", playerVelocity)
-
-local function moveHero(event) hero.x = hero.x + motionX end
-
-Runtime:addEventListener("enterFrame", moveHero)
-
 local function generateGroundRow()
-    holeIndex = math.random(2, 5)
-    group = {}
-    for i = 0, 7 do
-        if (i ~= holeIndex) then
-            local ground = display.newImageRect("assets/ground_single.png", 50,
-                                                50)
-            ground.x = i * 50
-            ground.y = display.contentHeight + 100
-            physics.addBody(ground, "static")
-            table.insert(group, ground)
-        end
+    if (lastRow == nil or lastRow:getY() < groupGenerationBorder) then
+        local row = GroundRow(display.contentHeight + 100, 7, 50, physics,
+                              display)
+        Runtime:addEventListener("enterFrame", row)
+        table.insert(rows, row)
+        lastRow = row
     end
-    table.insert(groups, group)
 end
 
-local function moveGrous(event)
-    local groupY = 0
-    for i, group in ipairs(groups) do
-        for i, ground in ipairs(group) do
-            ground.y = ground.y - 1
-            groupY = ground.y
-        end
-    end
-    if groupY < groupGenerationBorder then generateGroundRow() end
-end
-
-Runtime:addEventListener("enterFrame", moveGrous)
+Runtime:addEventListener("enterFrame", generateGroundRow)
 
 local function checkDeath()
-    if (display.screenOriginY > hero.y) then
+    if (display.screenOriginY > hero:getBody().y) then
         background.x = display.contentCenterX
         background.y = display.contentCenterY
-        hero.x = display.contentCenterX
-        hero.y = display.contentCenterY
-        for i, group in ipairs(groups) do
-            for i, ground in ipairs(group) do
+        hero:getBody().x = display.contentCenterX
+        hero:getBody().y = display.contentCenterY
+        for i, row in ipairs(rows) do
+            for i, ground in ipairs(row:getValues()) do
                 display.remove(ground)
             end
+            row:remove()
         end
-        groups = {}
-        generateGroundRow()
+        rows = {}
+        lastRow = nil
     end
 end
 
 Runtime:addEventListener("enterFrame", checkDeath)
 
-generateGroundRow()
+local function checkScore()
+    for i, row in ipairs(rows) do
+        if (not row:wasPast() and row:getY() < hero:getBody().y) then
+            score = score + 1
+            row:setAsPast()
+        end
+    end
+end
+
+Runtime:addEventListener("enterFrame", checkScore)
