@@ -1,6 +1,7 @@
 Object = require "object"
 require "hero"
 require "groundRow"
+require "enemy"
 
 -- Background
 local background = display.newImageRect("assets/background.png",
@@ -24,14 +25,14 @@ physics.setGravity(0, 7)
 physics.start()
 
 -- Walls
-leftWall = display.newRect(display.screenOriginX, 0, 0, display.contentHeight)
-rightWall = display.newRect(display.contentWidth, 0, 0, display.contentHeight)
+leftWall = display.newRect(display.screenOriginX - 5, 0, 0, display.contentHeight)
+rightWall = display.newRect(display.contentWidth + 5, 0, 0, display.contentHeight)
 physics.addBody(leftWall, "static", {density=400, friction = 0.0, bounce = 0.0})
 physics.addBody(rightWall, "static", {density=400, friction = 0.0, bounce = 0.0})
 
 -- Hero
 local hero = Hero(display.newImageRect("assets/hero_single.png", 30, 50),
-                  display.contentCenterX - 50, display.contentCenterY - 50, 150,
+                  display.contentCenterX + 50, display.contentCenterY - 50, 150,
                   physics)
 Runtime:addEventListener("touch", hero)
 
@@ -41,17 +42,19 @@ local groupGenerationBorder = display.contentHeight / 1.5
 
 local function generateGroundRow()
     if (lastRow == nil) then
-        local row = GroundRow(display.contentCenterY + 50, 7, 50, 70, physics,
+        local row = GroundRow(display.contentCenterY + 50, 7, 50, 70, 50, 70, physics,
                               display)
         Runtime:addEventListener("enterFrame", row)
         Runtime:addEventListener("collision", row)
+        Runtime:addEventListener("enterFrame", row:getEnemy())
         table.insert(rows, row)
         lastRow = row
     elseif (lastRow:getY() < groupGenerationBorder) then
-        local row = GroundRow(display.contentHeight + 100, 7, 50, 70, physics,
+        local row = GroundRow(display.contentHeight + 100, 7, 50, 70, 50, 70, physics,
                               display)
         Runtime:addEventListener("enterFrame", row)
         Runtime:addEventListener("collision", row)
+        Runtime:addEventListener("enterFrame", row:getEnemy())
         table.insert(rows, row)
         lastRow = row
     end
@@ -67,10 +70,7 @@ local function checkDeath()
         hero:getBody().x = display.contentCenterX
         hero:getBody().y = display.contentCenterY
         for i, row in ipairs(rows) do
-            for i, ground in ipairs(row:getValues()) do
-                display.remove(ground)
-            end
-            row:remove()
+            row:remove(display)
         end
         rows = {}
         lastRow = nil

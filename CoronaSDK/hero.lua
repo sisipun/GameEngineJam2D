@@ -4,9 +4,9 @@ function Hero:new(body, x, y, velocity, physics)
     self.body = body
     self.body.x = x
     self.body.y = y
+    self.velocity = velocity
     physics.addBody(self.body, "dynamic", {density=1, bounce = 0.0})
     self.body.isFixedRotation = true
-    self.velocity = velocity
 end
 
 function Hero:getBody() return self.body end
