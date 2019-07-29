@@ -17,12 +17,12 @@ function Hero:getBody() return self.body end
 function Hero:touch(event)
     local dx, dy = self.body:getLinearVelocity()
     if (event.phase == "began") then
-        if event.y <= display.contentCenterY and self.onGround then
+        if (event.y <= display.contentCenterY and self.onGround) then
             self.body:setLinearVelocity(dx, -self.verticalVelocity)
             self.onGround = false
-        elseif event.x >= display.contentCenterX then
+        elseif (event.x >= display.contentCenterX) then
             self.body:setLinearVelocity(self.horizontalVelocity, dy)
-        elseif event.x <= display.contentCenterX then
+        elseif (event.x <= display.contentCenterX) then
             self.body:setLinearVelocity(-self.horizontalVelocity, dy)
         end
     elseif (event.phase == "ended") then
@@ -31,7 +31,7 @@ function Hero:touch(event)
 end
 
 function Hero:collision(event)
-    if (event.object1.id == "hero" or event.object2.id == "hero") then
+    if (event.object1.id == self.body.id or event.object2.id == self.body.id) then
         self.onGround = true
     end
 end

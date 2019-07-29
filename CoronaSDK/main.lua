@@ -29,8 +29,8 @@ Runtime:addEventListener("enterFrame", updateText)
 
 -- Physics
 local physics = require("physics")
-physics.setGravity(0, 7)
 physics.start()
+physics.setGravity(0, 7)
 
 -- Walls
 leftWall = display.newRect(display.screenOriginX - 5, 0, 0,
@@ -54,23 +54,21 @@ Runtime:addEventListener("collision", hero)
 local rows = {}
 local groupGenerationBorder = display.contentHeight / 1.5
 
+local function createGroundRow(y)
+    local row = GroundRow(groundId, y, 7, 50, 70,
+    enemyId, 50, 70, physics, display)
+    Runtime:addEventListener("enterFrame", row)
+    Runtime:addEventListener("collision", row)
+    Runtime:addEventListener("enterFrame", row:getEnemy())
+    table.insert(rows, row)
+    return row
+end
+
 local function generateGroundRow()
     if (lastRow == nil) then
-        local row = GroundRow(groundId, display.contentCenterY + 50, 7, 50, 70,
-                              enemyId, 50, 70, physics, display)
-        Runtime:addEventListener("enterFrame", row)
-        Runtime:addEventListener("collision", row)
-        Runtime:addEventListener("enterFrame", row:getEnemy())
-        table.insert(rows, row)
-        lastRow = row
+        lastRow = createGroundRow(display.contentCenterY + 200)
     elseif (lastRow:getY() < groupGenerationBorder) then
-        local row = GroundRow(groundId, display.contentHeight + 100, 7, 50, 70,
-                              enemyId, 50, 70, physics, display)
-        Runtime:addEventListener("enterFrame", row)
-        Runtime:addEventListener("collision", row)
-        Runtime:addEventListener("enterFrame", row:getEnemy())
-        table.insert(rows, row)
-        lastRow = row
+        lastRow = createGroundRow(display.contentHeight + 100)
     end
 end
 
@@ -123,6 +121,14 @@ end
 
 Runtime:addEventListener("enterFrame", checkFall)
 
+local function enemyKill(enemy) 
+    physics.setGravity(0, 7)
+    for i, row in ipairs(rows) do row:moveNormal() end
+    display.remove(enemy)
+    score = score + 1
+    audio.play(killSound)
+end
+
 local function checkLanding(event)
     if (event.object1.id == heroId or event.object2.id == heroId) then
         if (event.object1.id == groundId or event.object2.id == groundId) then
@@ -134,22 +140,14 @@ local function checkLanding(event)
         end
         if (event.object1.id == enemyId) then
             if (event.object2.y < event.object1.y) then
-                physics.setGravity(0, 7)
-                for i, row in ipairs(rows) do row:moveNormal() end
-                display.remove(event.object1)
-                score = score + 1
-                audio.play(killSound)
+                enemyKill(event.object1)
             else
                 restart()
             end
         end
         if (event.object2.id == enemyId) then
             if (event.object1.y < event.object2.y) then
-                physics.setGravity(0, 7)
-                for i, row in ipairs(rows) do row:moveNormal() end
-                display.remove(event.object2)
-                score = score + 1
-                audio.play(killSound)
+                enemyKill(event.object2)
             else
                 restart()
             end

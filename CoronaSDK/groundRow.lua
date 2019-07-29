@@ -3,6 +3,7 @@ GroundRow = Object.extend(Object)
 function GroundRow:new(id, y, rowSize, elemSize, velocity, enemyId, enemySize,
                        enemyVelocity, physics, display)
     self.values = {}
+    self.id = id
     self.y = y
     self.past = false
     self.touched = false
@@ -57,7 +58,7 @@ function GroundRow:enterFrame(event)
 end
 
 function GroundRow:collision(event)
-    if (event.object1.id == "ground" or event.object2.id == "ground") then
+    if (event.object1.id == self.id or event.object2.id == self.id) then
         if (event.object1.id == "hero" or event.object2.id == "hero") then
             self.touched = true
         end
