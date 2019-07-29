@@ -7,6 +7,10 @@ local heroId = "hero"
 local groundId = "ground"
 local enemyId = "enemy"
 
+local scoreSound = audio.loadSound("assets/score.mp3")
+local killSound = audio.loadSound("assets/enemy_kill.wav")
+local deathSound = audio.loadSound("assets/death.wav")
+
 -- Background
 local background = display.newImageRect("assets/background.png",
                                         display.contentWidth,
@@ -73,6 +77,7 @@ end
 Runtime:addEventListener("enterFrame", generateGroundRow)
 
 local function restart()
+    audio.play(deathSound)
     physics.setGravity(0, 7)
     background.x = display.contentCenterX
     background.y = display.contentCenterY
@@ -100,6 +105,7 @@ local function checkScore()
             end
             score = score + (1 * scoreFactor)
             row:setAsPast()
+            audio.play(scoreSound)
         end
     end
 end
@@ -127,23 +133,23 @@ local function checkLanding(event)
             end
         end
         if (event.object1.id == enemyId) then
-            if (event.object2.y <
-                event.object1.y) then
+            if (event.object2.y < event.object1.y) then
                 physics.setGravity(0, 7)
                 for i, row in ipairs(rows) do row:moveNormal() end
                 display.remove(event.object1)
                 score = score + 1
+                audio.play(killSound)
             else
                 restart()
             end
         end
         if (event.object2.id == enemyId) then
-            if (event.object1.y <
-                event.object2.y) then
+            if (event.object1.y < event.object2.y) then
                 physics.setGravity(0, 7)
                 for i, row in ipairs(rows) do row:moveNormal() end
                 display.remove(event.object2)
                 score = score + 1
+                audio.play(killSound)
             else
                 restart()
             end
