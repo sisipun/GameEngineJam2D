@@ -1,12 +1,13 @@
 GroundRow = Object.extend(Object)
 
-function GroundRow:new(y, rowSize, elemSize, velocity, enemySize, enemyVelocity,
-                       physics, display)
+function GroundRow:new(id, y, rowSize, elemSize, velocity, enemyId, enemySize,
+                       enemyVelocity, physics, display)
     self.values = {}
     self.y = y
     self.past = false
     self.touched = false
     self.velocity = velocity
+    self.isMoveFast = false
     holeIndex = math.random(2, rowSize - 2)
     for i = 0, rowSize do
         if (i ~= holeIndex) then
@@ -14,7 +15,8 @@ function GroundRow:new(y, rowSize, elemSize, velocity, enemySize, enemyVelocity,
                                                 elemSize, elemSize)
             ground.x = i * elemSize
             ground.y = y
-            physics.addBody(ground, "static",
+            ground.id = id
+            physics.addBody(ground, "kinematic",
                             {density = 400, friction = 0.0, bounce = 0.0})
             ground:setLinearVelocity(0, -self.velocity)
             table.insert(self.values, ground)
@@ -31,9 +33,10 @@ function GroundRow:new(y, rowSize, elemSize, velocity, enemySize, enemyVelocity,
         enemyOrientation = -1
     end
     self.enemy = Enemy(display.newImageRect("assets/enemy_single.png",
-                                            enemySize, enemySize),
+                                            enemySize, enemySize), enemyId,
                        (holeIndex + enemyOrientation) * elemSize, y - enemySize,
-                       enemyVelocity, physics, leftBorder, rightBorder, enemyOrientation)
+                       enemyVelocity, physics, leftBorder, rightBorder,
+                       enemyOrientation)
 end
 
 function GroundRow:getValues() return self.values end
@@ -45,11 +48,21 @@ function GroundRow:getY() return self.y end
 function GroundRow:enterFrame(event)
     for i, ground in ipairs(self.values) do
         self.y = ground.y
-        ground:setLinearVelocity(0, -self.velocity)
+        if (self.isMoveFast) then
+            ground:setLinearVelocity(0, -2.5 * self.velocity)
+        else
+            ground:setLinearVelocity(0, -self.velocity)
+        end
     end
 end
 
-function GroundRow:collision(event) self.touched = true end
+function GroundRow:collision(event)
+    if (event.object1.id == "ground" or event.object2.id == "ground") then
+        if (event.object1.id == "hero" or event.object2.id == "hero") then
+            self.touched = true
+        end
+    end
+end
 
 function GroundRow:wasPast() return self.past end
 
@@ -64,14 +77,6 @@ function GroundRow:remove(display)
     self.values = {}
 end
 
-function GroundRow:moveFast()
-    for i, ground in ipairs(self.values) do
-        ground:setLinearVelocity(0, -2.5 * self.velocity)
-    end
-end
+function GroundRow:moveFast() self.isMoveFast = true end
 
-function GroundRow:moveNormal()
-    for i, ground in ipairs(self.values) do
-        ground:setLinearVelocity(0, -self.velocity)
-    end
-end
+function GroundRow:moveNormal() self.isMoveFast = false end

@@ -1,7 +1,9 @@
 Enemy = Object.extend(Object)
 
-function Enemy:new(body, x, y, velocity, physics, leftBorder, rightBorder, orientation)
+function Enemy:new(body, id, x, y, velocity, physics, leftBorder, rightBorder,
+                   orientation)
     self.body = body
+    self.body.id = id
     self.body.x = x
     self.body.y = y
     self.velocity = velocity
@@ -15,16 +17,11 @@ end
 
 function Enemy:getBody() return self.body end
 
-function Enemy:remove()
-    self.body = nil 
-end
+function Enemy:remove() self.body = nil end
 
 function Enemy:enterFrame(event)
-    if (self.body == nil) then
-        return
-    end
-    if (self.body.x < self.leftBorder or self.body.x + self.body.width > self.rightBorder) then
-        self.orientation = -1 * self.orientation
-    end
+    if (self.body == nil or self.body.x == nil) then return end
+    if (self.body.x < self.leftBorder or self.body.x + self.body.width >
+        self.rightBorder) then self.orientation = -1 * self.orientation end
     self.body:setLinearVelocity(self.orientation * self.velocity, 0)
 end
