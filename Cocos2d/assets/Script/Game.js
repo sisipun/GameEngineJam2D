@@ -6,6 +6,7 @@ cc.Class({
 
     // use this for initialization
     onLoad: function () {
+        cc.director.getPhysicsManager().enabled = true;
     },
 
     // called every frame

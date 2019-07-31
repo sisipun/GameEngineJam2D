@@ -23,6 +23,5 @@ cc.Class({
     },
 
     update (dt) {
-        this.node.x = this.node.x + 10 * dt
     },
 });
