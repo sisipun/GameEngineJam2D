@@ -2,26 +2,54 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
-        properties: {
-            // main character's jump height
-            jumpHeight: 0,
-            // main character's jump duration
-            jumpDuration: 0,
-            // maximal movement speed
-            maxMoveSpeed: 0,
-            // acceleration
-            accel: 0,
-        },
+        speed: 0,
     },
 
     // LIFE-CYCLE CALLBACKS:
 
-    // onLoad () {},
+    onLoad() {
+        console.log('x-' + this.node.x);
+        cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
+        cc.systemEvent.on(cc.SystemEvent.EventType.KEY_UP, this.onKeyUp, this);
+    },
 
-    start () {
+    destroy() {
+        cc.systemEvent.off(cc.SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
+        cc.systemEvent.off(cc.SystemEvent.EventType.KEY_UP, this.onKeyUp, this);
+    },
+
+    onKeyDown: function (event) {
+        switch (event.keyCode) {
+            case cc.macro.KEY.a:
+                console.log('press a key');
+                this.speed = -100;
+                break;
+            case cc.macro.KEY.d:
+                console.log('press d key');
+                this.speed = 100;
+                break;
+        }
+    },
+
+    onKeyUp: function (event) {
+        switch (event.keyCode) {
+            case cc.macro.KEY.a:
+                this.speed = 0;
+                console.log('release a key');
+                break;
+            case cc.macro.KEY.d:
+                console.log('release d key');
+                this.speed = 0;
+                break;
+        }
+    },
+
+    start() {
 
     },
 
-    update (dt) {
+    update(dt) {
+        console.log('x-' + this.node.x);
+        this.node.x += this.speed * dt;
     },
 });
