@@ -9,15 +9,15 @@ cc.Class({
         speed: {
             default: 0,
             type: cc.Integer
-        }
+        },
     },
 
-    onLoad() {
+    onLoad: function () {
         cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
         cc.systemEvent.on(cc.SystemEvent.EventType.KEY_UP, this.onKeyUp, this);
     },
 
-    destroy() {
+    onDestroy: function () {
         cc.systemEvent.off(cc.SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
         cc.systemEvent.off(cc.SystemEvent.EventType.KEY_UP, this.onKeyUp, this);
     },
@@ -36,16 +36,10 @@ cc.Class({
     onKeyUp: function (event) {
         switch (event.keyCode) {
             case cc.macro.KEY.a:
-                this.speed = 0;
-                break;
             case cc.macro.KEY.d:
                 this.speed = 0;
                 break;
         }
-    },
-
-    start() {
-
     },
 
     update(dt) {
@@ -53,10 +47,10 @@ cc.Class({
     },
 
     onPreSolve: function (contact, selfCollider, otherCollider) {
-        Global.scoreFactor = 1
-        if (Global.gravityZero) {
-            cc.director.getPhysicsManager().gravity = cc.v2(0, -320);
-            Global.gravityZero = false
+        Global.scoreFactor = 1;
+        if (Global.isZeroGravity) {
+            cc.director.getPhysicsManager().gravity = cc.v2(0, Global.gravity);
+            Global.isZeroGravity = false;
         }
     },
 });

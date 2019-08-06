@@ -74,17 +74,20 @@ cc.Class({
 
     start: function () {
         window.Global = {
-            gravityZero: false,
+            isZeroGravity: false,
             score: 0,
             scoreFactor: 1,
+            gravity: -320,
         };
-        this.lastRow = this.generateRow(this.initialGenerateRowY);
-        this.rows.push(this.lastRow);
 
         var scene = cc.director.getScene();
         this.hero.parent = scene;
         this.hero.setPosition(this.heroStartX, this.heroStartY);
-        this.scoreLabel.string = "Score: " + Global.score
+
+        this.lastRow = this.generateRow(this.initialGenerateRowY);
+        this.rows.push(this.lastRow);
+
+        this.scoreLabel.string = "Score: " + Global.score;
     },
 
     update: function (dt) {
@@ -94,32 +97,22 @@ cc.Class({
         }
 
         if (this.hero.y > this.heroDeathTriggerLine) {
-            this.rows.forEach(row => {
-                row.values.forEach(ground => {
-                    ground.stopAllActions();
-                    ground.destroy();
-                });
-            });
-            this.hero.setPosition(this.heroStartX, this.heroStartY);
-            this.lastRow = this.generateRow(this.initialGenerateRowY);
-            this.rows = [];
-            window.Global = {
-                gravityZero: false,
-                score: 0,
-                scoreFactor: 1,
-            };
+            this.restart();
         }
 
-        if (!Global.gravityZero && this.hero.y < this.heroGravitationTriggerLine) {
+        if (!Global.isZeroGravity && this.hero.y < this.heroGravitationTriggerLine) {
             cc.director.getPhysicsManager().gravity = cc.v2();
             this.hero.getComponent(cc.RigidBody).linearVelocity = cc.v2();
-            Global.gravityZero = true
+            Global.isZeroGravity = true
         }
 
-        var currentRows = this.rows.filter(row => row.values[0].y <= this.heroDeathTriggerLine);
-        var oldRows = this.rows.filter(row => row.values[0].y > this.heroDeathTriggerLine);
-        oldRows.forEach(row => row.values.forEach(ground => ground.destroy()))
-        this.rows = currentRows;
+        if (this.rows.length > 5) {
+            var currentRows = this.rows.filter(row => row.values[0].y <= this.heroDeathTriggerLine);
+            var oldRows = this.rows.filter(row => row.values[0].y > this.heroDeathTriggerLine);
+            oldRows.forEach(row => row.values.forEach(ground => ground.destroy()));
+            this.rows = currentRows;
+        }
+
         var row = this.rows.filter(row => !row.scored)[0]
         if (row && row.values[0].y > this.hero.y) {
             row.scored = true
@@ -130,8 +123,9 @@ cc.Class({
     },
 
     generateRow: function (y) {
-        const holeIndex = Math.round(this.getRandom(2, this.rowSize - 2));
+        const holeIndex = this.getRandom(2, this.rowSize - 2);
         const grounds = [];
+
         for (var i = 0; i < this.rowSize; i++) {
             if (i != holeIndex) {
                 var scene = cc.director.getScene();
@@ -151,7 +145,29 @@ cc.Class({
         };
     },
 
+    restart: function () {
+        window.Global = {
+            isZeroGravity: false,
+            score: 0,
+            scoreFactor: 1,
+        };
+
+        this.scoreLabel.string = "Score: " + Global.score;
+
+        this.rows.forEach(row => {
+            row.values.forEach(ground => {
+                ground.stopAllActions();
+                ground.destroy();
+            });
+        });
+        this.rows = [];
+
+        this.hero.setPosition(this.heroStartX, this.heroStartY);
+        this.lastRow = this.generateRow(this.initialGenerateRowY);
+        this.rows.push(this.lastRow);
+    },
+
     getRandom: function (min, max) {
-        return Math.random() * (max - min) + min;
+        return Math.round(Math.random() * (max - min) + min);
     },
 });

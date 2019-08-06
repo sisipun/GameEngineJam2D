@@ -2,18 +2,14 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
-        verticalVelocity: 100
+        verticalVelocity: {
+            default: 100,
+            type: cc.Integer
+        },
     },
 
-    start() {
-
-    },
-
-    update(dt) {
-        if (Global.gravityZero) {
-            this.node.y += 2 * this.verticalVelocity * dt;
-        } else {
-            this.node.y += this.verticalVelocity * dt;
-        }
+    update: function(dt) {
+        const speedFactor = Global.isZeroGravity ? 2 : 1;
+        this.node.y += speedFactor * this.verticalVelocity * dt;
     },
 });
