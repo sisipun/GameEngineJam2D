@@ -14,7 +14,7 @@ cc.Class({
 
         rowSize: {
             default: 18,
-            type: Number
+            type: cc.Integer
         },
 
         lastRow: {
@@ -24,37 +24,37 @@ cc.Class({
 
         generateRowTriggerLine: {
             default: 300,
-            type: Number
+            type: cc.Integer
         },
 
         initialGenerateRowY: {
             default: 200,
-            type: Number
+            type: cc.Integer
         },
 
         generateRowY: {
             default: 0,
-            type: Number
+            type: cc.Integer
         },
 
         heroDeathTriggerLine: {
             default: -100,
-            type: Number
+            type: cc.Integer
         },
 
         heroGravitationTriggerLine: {
             default: 200,
-            type: Number
+            type: cc.Integer
         },
 
         heroStartX: {
             default: 0,
-            type: Number
+            type: cc.Integer
         },
 
         heroStartY: {
             default: 0,
-            type: Number
+            type: cc.Integer
         },
 
         rows: {
@@ -64,6 +64,10 @@ cc.Class({
     },
 
     onLoad: function () {
+        window.Global = {
+            gravityZero: false,
+        };
+
         cc.director.getPhysicsManager().enabled = true;
     },
 
@@ -72,11 +76,6 @@ cc.Class({
         this.rows.push(this.lastRow);
 
         this.hero.setPosition(this.heroStartX, this.heroStartY);
-        const heroCollider = this.hero.getComponent(cc.PhysicsBoxCollider);
-        // heroCollider.node.on(cc.Node.EventType.TOUCH_START, function (touch, event) {
-            // console.log("hello")
-                // cc.director.getPhysicsManager().gravity = cc.v2 ();
-        // }, this);
     },
 
     update: function (dt) {
@@ -84,7 +83,7 @@ cc.Class({
             this.lastRow = this.generateRow(this.generateRowY);
             this.rows.push(this.lastRow);
         }
-        
+
         if (this.hero.y > this.heroDeathTriggerLine) {
             this.rows.forEach(row => {
                 row.values.forEach(ground => {
@@ -97,9 +96,11 @@ cc.Class({
             this.rows = [];
         }
 
-        // if (this.hero.y < this.heroGravitationTriggerLine) {
-        //     cc.director.getPhysicsManager().gravity = cc.v2 (0, 0);
-        // }
+        if (this.hero.y < this.heroGravitationTriggerLine) {
+            cc.director.getPhysicsManager().gravity = cc.v2();
+            this.hero.getComponent(cc.RigidBody).linearVelocity = cc.v2();
+            Global.gravityZero = true
+        }
     },
 
     generateRow: function (y) {
@@ -111,7 +112,7 @@ cc.Class({
                 var groundNode = cc.instantiate(this.groundTarget);
 
                 groundNode.parent = scene;
-                groundNode.setPosition(groundNode.width / 2 + i * groundNode.width, y);
+                groundNode.setPosition(groundNode.width / 2 + i * (groundNode.width - 1), y);
                 groundNode.active = true;
                 grounds.push(groundNode);
             }
@@ -125,5 +126,5 @@ cc.Class({
 
     getRandom: function (min, max) {
         return Math.random() * (max - min) + min;
-    }
+    },
 });

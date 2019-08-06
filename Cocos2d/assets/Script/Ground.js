@@ -5,11 +5,15 @@ cc.Class({
         verticalVelocity: 100
     },
 
-    start () {
+    start() {
 
     },
 
-    update (dt) {
-        this.node.y += this.verticalVelocity * dt;
+    update(dt) {
+        if (Global.gravityZero) {
+            this.node.y += 2 * this.verticalVelocity * dt;
+        } else {
+            this.node.y += this.verticalVelocity * dt;
+        }
     },
 });

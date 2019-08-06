@@ -2,10 +2,15 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
-        horizontalVelocity: 0,
+        horizontalVelocity: {
+            default: 300,
+            type: cc.Integer
+        },
+        speed: {
+            default: 0,
+            type: cc.Integer
+        }
     },
-
-    // LIFE-CYCLE CALLBACKS:
 
     onLoad() {
         cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
@@ -20,10 +25,10 @@ cc.Class({
     onKeyDown: function (event) {
         switch (event.keyCode) {
             case cc.macro.KEY.a:
-                this.horizontalVelocity = -100;
+                this.speed = -this.horizontalVelocity;
                 break;
             case cc.macro.KEY.d:
-                this.horizontalVelocity = 100;
+                this.speed = this.horizontalVelocity;
                 break;
         }
     },
@@ -31,10 +36,10 @@ cc.Class({
     onKeyUp: function (event) {
         switch (event.keyCode) {
             case cc.macro.KEY.a:
-                this.horizontalVelocity = 0;
+                this.speed = 0;
                 break;
             case cc.macro.KEY.d:
-                this.horizontalVelocity = 0;
+                this.speed = 0;
                 break;
         }
     },
@@ -44,6 +49,11 @@ cc.Class({
     },
 
     update(dt) {
-        this.node.x += this.horizontalVelocity * dt;
+        this.node.x += this.speed * dt;
+    },
+
+    onPreSolve: function (contact, selfCollider, otherCollider) {
+        cc.director.getPhysicsManager().gravity = cc.v2(0, -320);
+        Global.gravityZero = false
     },
 });

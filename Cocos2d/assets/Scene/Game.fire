@@ -518,7 +518,8 @@
       "__id__": 9
     },
     "_enabled": true,
-    "horizontalVelocity": 0,
+    "horizontalVelocity": 300,
+    "speed": 0,
     "_id": "2ajbO6Q61FSJWxRFKhDLbv"
   },
   {
@@ -557,7 +558,7 @@
     "tag": 0,
     "_density": 1,
     "_sensor": false,
-    "_friction": 0.2,
+    "_friction": 0.1,
     "_restitution": 0,
     "body": null,
     "_offset": {
@@ -607,7 +608,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 50,
+      "width": 51,
       "height": 50
     },
     "_anchorPoint": {
@@ -676,7 +677,7 @@
       "__id__": 14
     },
     "_enabled": true,
-    "_type": 0,
+    "_type": 1,
     "_allowSleep": true,
     "_gravityScale": 1,
     "_linearDamping": 0,
@@ -714,7 +715,7 @@
     },
     "_size": {
       "__type__": "cc.Size",
-      "width": 50,
+      "width": 51,
       "height": 50
     },
     "_id": "5akzAr2mpOYIbfpGuTsnbx"
@@ -767,7 +768,7 @@
     "initialGenerateRowY": 200,
     "generateRowY": 0,
     "heroDeathTriggerLine": 300,
-    "heroGravitationTriggerLine": -100,
+    "heroGravitationTriggerLine": -50,
     "heroStartX": 0,
     "heroStartY": 0,
     "rows": [],
