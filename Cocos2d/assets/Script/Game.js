@@ -12,6 +12,11 @@ cc.Class({
             type: cc.Node,
         },
 
+        scoreLabel: {
+            default: null,
+            type: cc.Label,
+        },
+
         rowSize: {
             default: 18,
             type: cc.Integer
@@ -64,18 +69,22 @@ cc.Class({
     },
 
     onLoad: function () {
-        window.Global = {
-            gravityZero: false,
-        };
-
         cc.director.getPhysicsManager().enabled = true;
     },
 
     start: function () {
+        window.Global = {
+            gravityZero: false,
+            score: 0,
+            scoreFactor: 1,
+        };
         this.lastRow = this.generateRow(this.initialGenerateRowY);
         this.rows.push(this.lastRow);
 
+        var scene = cc.director.getScene();
+        this.hero.parent = scene;
         this.hero.setPosition(this.heroStartX, this.heroStartY);
+        this.scoreLabel.string = "Score: " + Global.score
     },
 
     update: function (dt) {
@@ -94,12 +103,29 @@ cc.Class({
             this.hero.setPosition(this.heroStartX, this.heroStartY);
             this.lastRow = this.generateRow(this.initialGenerateRowY);
             this.rows = [];
+            window.Global = {
+                gravityZero: false,
+                score: 0,
+                scoreFactor: 1,
+            };
         }
 
-        if (this.hero.y < this.heroGravitationTriggerLine) {
+        if (!Global.gravityZero && this.hero.y < this.heroGravitationTriggerLine) {
             cc.director.getPhysicsManager().gravity = cc.v2();
             this.hero.getComponent(cc.RigidBody).linearVelocity = cc.v2();
             Global.gravityZero = true
+        }
+
+        var currentRows = this.rows.filter(row => row.values[0].y <= this.heroDeathTriggerLine);
+        var oldRows = this.rows.filter(row => row.values[0].y > this.heroDeathTriggerLine);
+        oldRows.forEach(row => row.values.forEach(ground => ground.destroy()))
+        this.rows = currentRows;
+        var row = this.rows.filter(row => !row.scored)[0]
+        if (row && row.values[0].y > this.hero.y) {
+            row.scored = true
+            Global.score += 1 * Global.scoreFactor
+            this.scoreLabel.string = "Score: " + Global.score
+            Global.scoreFactor += 1
         }
     },
 
@@ -120,7 +146,8 @@ cc.Class({
 
         return {
             y: y,
-            values: grounds
+            values: grounds,
+            scored: false
         };
     },
 

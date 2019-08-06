@@ -53,7 +53,10 @@ cc.Class({
     },
 
     onPreSolve: function (contact, selfCollider, otherCollider) {
-        cc.director.getPhysicsManager().gravity = cc.v2(0, -320);
-        Global.gravityZero = false
+        Global.scoreFactor = 1
+        if (Global.gravityZero) {
+            cc.director.getPhysicsManager().gravity = cc.v2(0, -320);
+            Global.gravityZero = false
+        }
     },
 });
