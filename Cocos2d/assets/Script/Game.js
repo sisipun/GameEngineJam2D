@@ -88,7 +88,8 @@ cc.Class({
             score: 0,
             scoreFactor: 1,
             gravity: -320,
-            jumpActionTag: 1
+            jumpActionTag: 1,
+            restart: false,
         };
 
         var scene = cc.director.getScene();
@@ -107,7 +108,7 @@ cc.Class({
             this.rows.push(this.lastRow);
         }
 
-        if (this.hero.y > this.heroDeathTriggerLine) {
+        if (this.hero.y > this.heroDeathTriggerLine || Global.restart) {
             this.restart();
         }
 
@@ -131,9 +132,10 @@ cc.Class({
         if (row && row.values[0].y > this.hero.y) {
             row.scored = true
             Global.score += 1 * Global.scoreFactor
-            this.scoreLabel.string = "Score: " + Global.score
             Global.scoreFactor += 1
         }
+
+        this.scoreLabel.string = "Score: " + Global.score
 
         this.rows.forEach(row => {
             if (row.enemyOrientation == 1) {
@@ -155,7 +157,7 @@ cc.Class({
     },
 
     generateRow: function (y) {
-        const holeIndex = this.getRandom(2, this.rowSize - 2);
+        const holeIndex = this.getRandom(3, this.rowSize - 3);
         const grounds = [];
 
         var scene = cc.director.getScene();
@@ -202,6 +204,9 @@ cc.Class({
             isZeroGravity: isZeroGravity,
             score: 0,
             scoreFactor: 1,
+            gravity: -320,
+            jumpActionTag: 1,
+            restart: false,
         };
 
         this.scoreLabel.string = "Score: " + Global.score;
@@ -216,7 +221,6 @@ cc.Class({
         this.rows = [];
 
         this.hero.setPosition(this.heroStartX, this.heroStartY);
-        this.hero.stopAction(Global.jumpActionTag);
         this.lastRow = this.generateRow(this.initialGenerateRowY);
         this.rows.push(this.lastRow);
     },

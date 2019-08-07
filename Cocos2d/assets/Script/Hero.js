@@ -75,5 +75,13 @@ cc.Class({
             Global.isZeroGravity = false;
         }
         this.canJump = true;
+        if (otherCollider.node.name == "enemy") {
+            if (otherCollider.node.y + (otherCollider.node.height / 2) > selfCollider.node.y) {
+                Global.restart = true;
+            } else {
+                Global.score += 1;
+                otherCollider.node.active = false;
+            }
+        }
     },
 });
