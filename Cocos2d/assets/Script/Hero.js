@@ -2,6 +2,14 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
+        jumpVelocity: {
+            default: 350,
+            type: cc.Integer
+        },
+        jumpDuration: {
+            default: 50,
+            type: cc.Integer
+        },
         horizontalVelocity: {
             default: 300,
             type: cc.Integer
@@ -9,6 +17,10 @@ cc.Class({
         speed: {
             default: 0,
             type: cc.Integer
+        },
+        canJump: {
+            default: false,
+            type: cc.Boolean
         },
     },
 
@@ -21,6 +33,11 @@ cc.Class({
         cc.systemEvent.off(cc.SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
         cc.systemEvent.off(cc.SystemEvent.EventType.KEY_UP, this.onKeyUp, this);
     },
+    
+    start: function() {
+        this.jumpAction = cc.moveBy(this.jumpDuration, cc.v2(0, this.jumpVelocity)).easing(cc.easeCubicActionOut());
+        this.jumpAction.setTag(Global.jumpActionTag);
+    },
 
     onKeyDown: function (event) {
         switch (event.keyCode) {
@@ -30,6 +47,11 @@ cc.Class({
             case cc.macro.KEY.d:
                 this.speed = this.horizontalVelocity;
                 break;
+            case cc.macro.KEY.space:
+                if (this.canJump && !Global.isZeroGravity) {
+                    this.node.runAction(this.jumpAction);
+                    this.canJump = false;
+                }
         }
     },
 
@@ -52,5 +74,6 @@ cc.Class({
             cc.director.getPhysicsManager().gravity = cc.v2(0, Global.gravity);
             Global.isZeroGravity = false;
         }
+        this.canJump = true;
     },
 });

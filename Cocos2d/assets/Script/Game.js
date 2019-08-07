@@ -88,6 +88,7 @@ cc.Class({
             score: 0,
             scoreFactor: 1,
             gravity: -320,
+            jumpActionTag: 1
         };
 
         var scene = cc.director.getScene();
@@ -196,8 +197,9 @@ cc.Class({
     },
 
     restart: function () {
+        var isZeroGravity = Global.isZeroGravity;
         window.Global = {
-            isZeroGravity: false,
+            isZeroGravity: isZeroGravity,
             score: 0,
             scoreFactor: 1,
         };
@@ -214,6 +216,7 @@ cc.Class({
         this.rows = [];
 
         this.hero.setPosition(this.heroStartX, this.heroStartY);
+        this.hero.stopAction(Global.jumpActionTag);
         this.lastRow = this.generateRow(this.initialGenerateRowY);
         this.rows.push(this.lastRow);
     },
