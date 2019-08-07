@@ -6,6 +6,11 @@ cc.Class({
             default: null,
             type: cc.Node,
         },
+        
+        enemyTarget: {
+            default: null,
+            type: cc.Node,
+        },
 
         hero: {
             default: null,
@@ -65,7 +70,12 @@ cc.Class({
         rows: {
             default: [],
             type: Array
-        }
+        },
+
+        enemyHorizontalVelocity: {
+            default: 100,
+            type: cc.Integer
+        },
     },
 
     onLoad: function () {
@@ -109,7 +119,10 @@ cc.Class({
         if (this.rows.length > 5) {
             var currentRows = this.rows.filter(row => row.values[0].y <= this.heroDeathTriggerLine);
             var oldRows = this.rows.filter(row => row.values[0].y > this.heroDeathTriggerLine);
-            oldRows.forEach(row => row.values.forEach(ground => ground.destroy()));
+            oldRows.forEach(row => {
+                row.values.forEach(ground => ground.destroy());
+                row.enemy.destroy();
+            });
             this.rows = currentRows;
         }
 
@@ -120,15 +133,34 @@ cc.Class({
             this.scoreLabel.string = "Score: " + Global.score
             Global.scoreFactor += 1
         }
+
+        this.rows.forEach(row => {
+            if (row.enemyOrientation == 1) {
+                if (row.enemy.x + row.groundWidth / 2 > row.values[this.rowSize - 2].x + row.groundWidth / 2) {
+                    row.enemySpeed = -this.enemyHorizontalVelocity;
+                } 
+                else if (row.enemy.x - row.groundWidth / 2 < (row.holeIndex * row.groundWidth) + row.groundWidth) {
+                    row.enemySpeed = this.enemyHorizontalVelocity;
+                } 
+            } else if (row.enemyOrientation == -1) {
+                if (row.enemy.x - row.groundWidth / 2 < row.values[0].x - row.groundWidth / 2) {
+                    row.enemySpeed = this.enemyHorizontalVelocity;
+                } else if (row.enemy.x + row.groundWidth / 2 > row.holeIndex * row.groundWidth) {
+                    row.enemySpeed = -this.enemyHorizontalVelocity;
+                }
+            }
+            row.enemy.x += row.enemySpeed * dt;
+        });
     },
 
     generateRow: function (y) {
         const holeIndex = this.getRandom(2, this.rowSize - 2);
         const grounds = [];
 
+        var scene = cc.director.getScene();
+
         for (var i = 0; i < this.rowSize; i++) {
             if (i != holeIndex) {
-                var scene = cc.director.getScene();
                 var groundNode = cc.instantiate(this.groundTarget);
 
                 groundNode.parent = scene;
@@ -138,10 +170,28 @@ cc.Class({
             }
         }
 
+        var enemyNode = cc.instantiate(this.enemyTarget);
+
+        var enemyOrientation = this.getRandom(-2, 2);
+        if (enemyOrientation >= 0) {
+            enemyOrientation = 1;
+        } else {
+            enemyOrientation = -1;
+        }
+
+        enemyNode.parent = scene;
+        enemyNode.setPosition(grounds[0].width / 2 + (holeIndex + enemyOrientation) * (grounds[0].width - 1), y + enemyNode.width);
+        enemyNode.active = true;
+
         return {
             y: y,
+            groundWidth: grounds[0].width - 1,
             values: grounds,
-            scored: false
+            holeIndex: holeIndex,
+            scored: false,
+            enemy: enemyNode,
+            enemyOrientation: enemyOrientation,
+            enemySpeed: enemyOrientation * this.enemyHorizontalVelocity,
         };
     },
 
@@ -159,6 +209,7 @@ cc.Class({
                 ground.stopAllActions();
                 ground.destroy();
             });
+            row.enemy.destroy();
         });
         this.rows = [];
 
