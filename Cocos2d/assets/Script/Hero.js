@@ -22,6 +22,10 @@ cc.Class({
             default: false,
             type: cc.Boolean
         },
+        killAudio: {
+            default: null,
+            type: cc.AudioSource
+        },
     },
 
     onLoad: function () {
@@ -33,8 +37,8 @@ cc.Class({
         cc.systemEvent.off(cc.SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
         cc.systemEvent.off(cc.SystemEvent.EventType.KEY_UP, this.onKeyUp, this);
     },
-    
-    start: function() {
+
+    start: function () {
         this.jumpAction = cc.moveBy(this.jumpDuration, cc.v2(0, this.jumpVelocity)).easing(cc.easeCubicActionOut());
         this.jumpAction.setTag(Global.jumpActionTag);
     },
@@ -81,6 +85,7 @@ cc.Class({
             } else {
                 Global.score += 1;
                 otherCollider.node.active = false;
+                this.killAudio.play();
             }
         }
     },

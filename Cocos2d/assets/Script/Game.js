@@ -6,7 +6,7 @@ cc.Class({
             default: null,
             type: cc.Node,
         },
-        
+
         enemyTarget: {
             default: null,
             type: cc.Node,
@@ -76,6 +76,16 @@ cc.Class({
             default: 100,
             type: cc.Integer
         },
+
+        deathAudio: {
+            default: null,
+            type: cc.AudioSource
+        },
+
+        scoreAudio: {
+            default: null,
+            type: cc.AudioSource
+        },
     },
 
     onLoad: function () {
@@ -133,6 +143,7 @@ cc.Class({
             row.scored = true
             Global.score += 1 * Global.scoreFactor
             Global.scoreFactor += 1
+            this.scoreAudio.play();
         }
 
         this.scoreLabel.string = "Score: " + Global.score
@@ -141,10 +152,10 @@ cc.Class({
             if (row.enemyOrientation == 1) {
                 if (row.enemy.x + row.groundWidth / 2 > row.values[this.rowSize - 2].x + row.groundWidth / 2) {
                     row.enemySpeed = -this.enemyHorizontalVelocity;
-                } 
+                }
                 else if (row.enemy.x - row.groundWidth / 2 < (row.holeIndex * row.groundWidth) + row.groundWidth) {
                     row.enemySpeed = this.enemyHorizontalVelocity;
-                } 
+                }
             } else if (row.enemyOrientation == -1) {
                 if (row.enemy.x - row.groundWidth / 2 < row.values[0].x - row.groundWidth / 2) {
                     row.enemySpeed = this.enemyHorizontalVelocity;
@@ -199,6 +210,7 @@ cc.Class({
     },
 
     restart: function () {
+        this.deathAudio.play();
         var isZeroGravity = Global.isZeroGravity;
         window.Global = {
             isZeroGravity: isZeroGravity,
