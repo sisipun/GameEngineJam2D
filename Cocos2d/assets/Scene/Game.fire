@@ -436,10 +436,8 @@
     "_enabled": true,
     "jumpVelocity": 300,
     "jumpDuration": 2,
-    "horizontalVelocity": 300,
-    "speed": 0,
-    "canJump": false,
-    "killAudio": {
+    "velocity": 300,
+    "enemyKillSound": {
       "__id__": 10
     },
     "_id": "2ajbO6Q61FSJWxRFKhDLbv"
@@ -1163,10 +1161,10 @@
     "heroStartY": 300,
     "rows": [],
     "enemyHorizontalVelocity": 100,
-    "deathAudio": {
+    "deathSound": {
       "__id__": 26
     },
-    "scoreAudio": {
+    "scoreSound": {
       "__id__": 28
     },
     "_id": "f4cC/Bu5lHvrxvR+txJpj/"
