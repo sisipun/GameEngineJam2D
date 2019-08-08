@@ -3,32 +3,26 @@ cc.Class({
 
     properties: {
         jumpVelocity: {
-            default: 350,
-            type: cc.Integer
-        },
-        jumpDuration: {
-            default: 50,
-            type: cc.Integer
-        },
-        horizontalVelocity: {
             default: 300,
             type: cc.Integer
         },
-        speed: {
-            default: 0,
+        jumpDuration: {
+            default: 2,
             type: cc.Integer
         },
-        canJump: {
-            default: false,
-            type: cc.Boolean
+        velocity: {
+            default: 300,
+            type: cc.Integer
         },
-        killAudio: {
+        enemyKillSound: {
             default: null,
             type: cc.AudioSource
         },
     },
 
     onLoad: function () {
+        this.speed = 0;
+        this.canJump = false;
         cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
         cc.systemEvent.on(cc.SystemEvent.EventType.KEY_UP, this.onKeyUp, this);
     },
@@ -46,16 +40,17 @@ cc.Class({
     onKeyDown: function (event) {
         switch (event.keyCode) {
             case cc.macro.KEY.a:
-                this.speed = -this.horizontalVelocity;
+                this.speed = -this.velocity;
                 break;
             case cc.macro.KEY.d:
-                this.speed = this.horizontalVelocity;
+                this.speed = this.velocity;
                 break;
             case cc.macro.KEY.space:
                 if (this.canJump && !Global.isZeroGravity) {
                     this.node.runAction(this.jumpAction);
                     this.canJump = false;
                 }
+                break
         }
     },
 
@@ -74,18 +69,20 @@ cc.Class({
 
     onPreSolve: function (contact, selfCollider, otherCollider) {
         Global.scoreFactor = 1;
+        this.canJump = true;
+
         if (Global.isZeroGravity) {
             cc.director.getPhysicsManager().gravity = cc.v2(0, Global.gravity);
             Global.isZeroGravity = false;
         }
-        this.canJump = true;
+
         if (otherCollider.node.name == "enemy") {
             if (otherCollider.node.y + (otherCollider.node.height / 2) > selfCollider.node.y) {
                 Global.restart = true;
             } else {
                 Global.score += 1;
                 otherCollider.node.active = false;
-                this.killAudio.play();
+                this.enemyKillSound.play();
             }
         }
     },

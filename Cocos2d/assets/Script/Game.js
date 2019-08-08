@@ -77,12 +77,12 @@ cc.Class({
             type: cc.Integer
         },
 
-        deathAudio: {
+        deathSound: {
             default: null,
             type: cc.AudioSource
         },
 
-        scoreAudio: {
+        scoreSound: {
             default: null,
             type: cc.AudioSource
         },
@@ -143,7 +143,7 @@ cc.Class({
             row.scored = true
             Global.score += 1 * Global.scoreFactor
             Global.scoreFactor += 1
-            this.scoreAudio.play();
+            this.scoreSound.play();
         }
 
         this.scoreLabel.string = "Score: " + Global.score
@@ -210,7 +210,7 @@ cc.Class({
     },
 
     restart: function () {
-        this.deathAudio.play();
+        this.deathSound.play();
         var isZeroGravity = Global.isZeroGravity;
         window.Global = {
             isZeroGravity: isZeroGravity,

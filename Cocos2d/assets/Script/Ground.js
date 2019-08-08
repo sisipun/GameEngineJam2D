@@ -8,7 +8,7 @@ cc.Class({
         },
     },
 
-    update: function(dt) {
+    update: function (dt) {
         const speedFactor = Global.isZeroGravity ? 2 : 1;
         this.node.y += speedFactor * this.verticalVelocity * dt;
     },
